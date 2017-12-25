@@ -6,9 +6,10 @@ class UrlShortenerController < ApplicationController
     redis = EM::Hiredis.connect
     token = SecureRandom.hex(4)
     redis.set(token, params[:longUrl])
-    p "#{request.base_url}/#{token}"
     render json: { url: "#{request.base_url}/#{token}" }
 
+    # Хотелось бы использовать вариант через callback
+    # Но он вызвает ошибку про double redirect or/and rendering
     #redis.set(token, params[:longUrl]).callback {
     #  render json: { url: "#{request.base_url}/#{token}" }
     #}
@@ -23,7 +24,7 @@ class UrlShortenerController < ApplicationController
     }
     redirect_to long_url, status: :moved_permanently
 
-
+    # Аналогично первому экшену
     #redis.get(params[:token]) { |value|
     #  redirect_to value, status: :moved_permanently
     #}
